@@ -34,3 +34,7 @@ build/
 
 ### DB ###
 postgres-data/
+
+### Logs ###
+logs/
+book-library.log
