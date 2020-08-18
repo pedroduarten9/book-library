@@ -1,21 +1,20 @@
-package com.neto.pedro.booklibrary.domain.book;
+package com.neto.pedro.booklibrary.dto.book;
 
-import com.neto.pedro.booklibrary.domain.BaseEntity;
-import com.neto.pedro.booklibrary.domain.author.Author;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.neto.pedro.booklibrary.dto.BaseEntityDto;
+import com.neto.pedro.booklibrary.dto.author.AuthorDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-public class Book extends BaseEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BookDto extends BaseEntityDto {
 
     @NotBlank
     private String isbn;
@@ -26,6 +25,5 @@ public class Book extends BaseEntity {
     private String description;
 
     @NotNull
-    @ManyToOne
-    private Author author;
+    private AuthorDto author;
 }
