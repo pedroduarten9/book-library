@@ -31,7 +31,7 @@ public class BookController {
     }
 
     @ApiOperation("Get book")
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BookDto> getBook(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(bookService.getBook(id));
     }
