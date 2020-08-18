@@ -11,6 +11,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -41,11 +44,7 @@ public class BookRepositoryTest {
 
     @Test
     public void testExistsByIsbnAndStatusNot() {
-        Book book = new Book();
-        book.setIsbn(ISBN_TEST);
-        book.setTitle(TITLE_TEST);
-        book.setAuthor(author);
-        book.setStatus(EntityStatus.ACTIVE);
+        Book book = createBookWithStatus(EntityStatus.ACTIVE);
 
         testEntityManager.persist(book);
         testEntityManager.flush();
@@ -57,11 +56,7 @@ public class BookRepositoryTest {
 
     @Test
     public void testExistsByIsbnAndStatusNotSoftDelete() {
-        Book book = new Book();
-        book.setIsbn(ISBN_TEST);
-        book.setTitle(TITLE_TEST);
-        book.setAuthor(author);
-        book.setStatus(EntityStatus.DELETED);
+        Book book = createBookWithStatus(EntityStatus.DELETED);
 
         testEntityManager.persist(book);
         testEntityManager.flush();
@@ -73,11 +68,7 @@ public class BookRepositoryTest {
 
     @Test
     public void testExistsByIsbnAndStatusNotWrongIsbn() {
-        Book book = new Book();
-        book.setIsbn(ISBN_TEST);
-        book.setTitle(TITLE_TEST);
-        book.setAuthor(author);
-        book.setStatus(EntityStatus.ACTIVE);
+        Book book = createBookWithStatus(EntityStatus.ACTIVE);
 
         testEntityManager.persist(book);
         testEntityManager.flush();
@@ -92,5 +83,45 @@ public class BookRepositoryTest {
         boolean exists = bookRepository.existsByIsbnAndStatusNot(ISBN_TEST, EntityStatus.DELETED);
 
         assertThat(exists).isFalse();
+    }
+
+    @Test
+    public void testFindByIdAndStatusNot() {
+        Book book = createBookWithStatus(EntityStatus.ACTIVE);
+
+        UUID id = (UUID) testEntityManager.persistAndGetId(book);
+        testEntityManager.flush();
+
+        Optional<Book> found = bookRepository.findByIdAndStatusNot(id, EntityStatus.DELETED);
+
+        assertThat(found).isNotEmpty();
+    }
+
+    @Test
+    public void testFindByIdAndStatusNotNotFound() {
+        Book book = createBookWithStatus(EntityStatus.DELETED);
+
+        UUID id = (UUID) testEntityManager.persistAndGetId(book);
+        testEntityManager.flush();
+
+        Optional<Book> found = bookRepository.findByIdAndStatusNot(id, EntityStatus.DELETED);
+
+        assertThat(found).isEmpty();
+    }
+
+    @Test
+    public void testFindByIdAndStatusNotNotFoundEmpty() {
+        Optional<Book> found = bookRepository.findByIdAndStatusNot(UUID.randomUUID(), EntityStatus.DELETED);
+
+        assertThat(found).isEmpty();
+    }
+
+    private Book createBookWithStatus(EntityStatus status) {
+        Book book = new Book();
+        book.setIsbn(ISBN_TEST);
+        book.setTitle(TITLE_TEST);
+        book.setAuthor(author);
+        book.setStatus(status);
+        return book;
     }
 }

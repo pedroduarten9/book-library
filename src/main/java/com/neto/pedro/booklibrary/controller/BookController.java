@@ -6,17 +6,13 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
-@RequestMapping(value = BookController.BASE_URL,
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = BookController.BASE_URL)
 @RestController
 public class BookController {
     static final String BASE_URL = "/books";
@@ -29,8 +25,14 @@ public class BookController {
     }
 
     @ApiOperation("Register a new book")
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BookDto> registerBook(@NotNull @Valid @RequestBody BookDto bookDto) {
         return ResponseEntity.ok(bookService.registerBook(bookDto));
+    }
+
+    @ApiOperation("Get book")
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDto> getBook(@PathVariable("id") UUID id) {
+        return ResponseEntity.ok(bookService.getBook(id));
     }
 }

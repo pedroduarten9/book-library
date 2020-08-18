@@ -7,6 +7,7 @@ import com.neto.pedro.booklibrary.domain.book.Book;
 import com.neto.pedro.booklibrary.dto.book.BookDto;
 import com.neto.pedro.booklibrary.error.ErrorCode;
 import com.neto.pedro.booklibrary.error.exception.BookConflictException;
+import com.neto.pedro.booklibrary.error.exception.NotFoundException;
 import com.neto.pedro.booklibrary.repository.BookRepository;
 import com.neto.pedro.booklibrary.service.AuthorService;
 import com.neto.pedro.booklibrary.service.BookService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -47,5 +49,17 @@ public class BookServiceImpl implements BookService {
             log.info("ISBN provided: {} is already registered", bookDto.getIsbn());
             throw new BookConflictException(ErrorCode.ISBN_CONFLICT);
         }
+    }
+
+    @Override
+    public BookDto getBook(UUID id) {
+        Book book = bookRepository.findByIdAndStatusNot(id, EntityStatus.DELETED)
+                .orElseThrow(() -> {
+                    log.info("Could not find any active book with the id: {}", id);
+                    return new NotFoundException(ErrorCode.BOOK_NOT_FOUND);
+                });
+
+        log.info("Success reading book");
+        return bookConverter.toDto(book);
     }
 }
