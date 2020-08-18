@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class AuthorRepositoryTest {
+    private static final String AUTHOR_NAME = "John Doe Test";
 
     @Autowired
     private TestEntityManager testEntityManager;
@@ -26,9 +27,7 @@ public class AuthorRepositoryTest {
 
     @Test
     public void testFindByIdAndStatusNotGoodPath() {
-        Author author = new Author();
-        author.setName("John Doe Test");
-        author.setStatus(EntityStatus.ACTIVE);
+        Author author = createAuthorWithStatus(EntityStatus.ACTIVE);
 
         UUID id = (UUID) testEntityManager.persistAndGetId(author);
         testEntityManager.flush();
@@ -45,9 +44,7 @@ public class AuthorRepositoryTest {
 
     @Test
     public void testFindByIdAndStatusNotFound() {
-        Author author = new Author();
-        author.setName("John Doe Test");
-        author.setStatus(EntityStatus.ACTIVE);
+        Author author = createAuthorWithStatus(EntityStatus.ACTIVE);
 
         UUID id = (UUID) testEntityManager.persistAndGetId(author);
         testEntityManager.flush();
@@ -60,9 +57,7 @@ public class AuthorRepositoryTest {
 
     @Test
     public void testFindByIdAndStatusNotEmpty() {
-        Author author = new Author();
-        author.setName("John Doe Test");
-        author.setStatus(EntityStatus.DELETED);
+        Author author = createAuthorWithStatus(EntityStatus.DELETED);
 
         UUID id = (UUID) testEntityManager.persistAndGetId(author);
         testEntityManager.flush();
@@ -71,6 +66,13 @@ public class AuthorRepositoryTest {
         Optional<Author> found = authorRepository.findByIdAndStatusNot(id, EntityStatus.DELETED);
 
         assertThat(found).isEmpty();
+    }
+
+    private Author createAuthorWithStatus(EntityStatus status) {
+        Author author = new Author();
+        author.setName(AUTHOR_NAME);
+        author.setStatus(status);
+        return author;
     }
 
     @Test

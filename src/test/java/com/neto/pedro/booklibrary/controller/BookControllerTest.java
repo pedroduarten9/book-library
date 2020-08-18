@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -97,6 +98,45 @@ public class BookControllerTest {
                 post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(book)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    public void testGetBook() throws Exception {
+        AuthorDto author = new AuthorDto();
+        author.setId(UUID.randomUUID());
+
+        UUID bookId = UUID.randomUUID();
+        BookDto book = new BookDto();
+        book.setId(bookId);
+        book.setTitle("Title");
+        book.setAuthor(author);
+
+        when(bookService.getBook(any()))
+                .thenReturn(book);
+
+        mvc.perform(
+                get("/books/" + bookId.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+    }
+
+    @Test
+    public void testGetBookBadRequest() throws Exception {
+        AuthorDto author = new AuthorDto();
+        author.setId(UUID.randomUUID());
+
+        BookDto book = new BookDto();
+        book.setId(UUID.randomUUID());
+        book.setTitle("Title");
+        book.setAuthor(author);
+
+        when(bookService.getBook(any()))
+                .thenReturn(book);
+
+        mvc.perform(
+                get("/books/olaola"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
