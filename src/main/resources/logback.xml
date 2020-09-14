@@ -46,7 +46,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="com.tblx.fleetdata" level="debug" additivity="false">
+    <logger name="com.neto.pedro.fleetdata" level="debug" additivity="false">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </logger>
