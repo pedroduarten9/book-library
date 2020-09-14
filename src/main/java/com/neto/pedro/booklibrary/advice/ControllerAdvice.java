@@ -32,7 +32,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(BaseException.class)
-    ResponseEntity<ResponseError> handleInvalidTimeFrameException(BaseException ex) {
+    ResponseEntity<ResponseError> handleBaseException(BaseException ex) {
         return ResponseEntity.status(ex.getErrorCode().getHttpStatus())
                 .body(new ResponseError(ex.getErrorCode()));
     }
